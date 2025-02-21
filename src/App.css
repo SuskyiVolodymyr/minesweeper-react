@@ -1,0 +1,15 @@
+body {
+  background-color: #dbd5bd;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.body {
+  background-color: #bdb38c;
+  width: 400px;
+  height: 600px;
+  margin: auto;
+  border-color: #918967;
+  border-style: solid;
+  border-width: 10px;
+  border-radius: 20px;
+}
