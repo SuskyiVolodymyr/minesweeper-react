@@ -2,17 +2,22 @@
 
 import { DifficultySelect } from '../types/DifficultySelect';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { GameStatus } from '../types/GameStatus';
 
 const initialState = {
   difficulty: 'easy' as DifficultySelect,
+  gameStatus: 'idle' as GameStatus,
 };
 
-export const difficultySlice = createSlice({
+export const gameSlice = createSlice({
   name: 'difficulty',
   initialState,
   reducers: {
-    set: (state, action: PayloadAction<DifficultySelect>) => {
+    setDifficulty: (state, action: PayloadAction<DifficultySelect>) => {
       state.difficulty = action.payload;
+    },
+    setGameStatus: (state, action: PayloadAction<GameStatus>) => {
+      state.gameStatus = action.payload;
     },
   },
 });

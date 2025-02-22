@@ -84,6 +84,7 @@ export const generateTable = (rows: number, columns: number, bombsCount: number)
         bombsAround: 0,
         row: i,
         column: j,
+        hasFlag: false,
       });
     }
 

@@ -1,0 +1,40 @@
+.game-over {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 400px;
+  height: 30%;
+  z-index: 1000;
+  border-radius: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lose {
+  background-color: rgba(255, 0, 0, 0.3);
+}
+
+.win {
+  background-color: rgba(0, 255, 0, 0.3);
+
+}
+
+.game-over-title {
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  color: white;
+  -webkit-text-stroke: 1px rgb(115, 1, 1);
+}
+
+.restart-button {
+  width: 200px;
+  height: 50px;
+  border-radius: 20px;
+  border: rgba(0, 0, 0, 0.49) solid 1px;
+  font-size: 18px;
+  cursor: pointer;
+}

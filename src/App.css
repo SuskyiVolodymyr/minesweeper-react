@@ -3,11 +3,26 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 50px;
+}
+
+.best-score-list {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  width: 200px;
+  text-align: center;
+}
+
 .body {
   background-color: #bdb38c;
   width: 400px;
   height: 600px;
-  margin: auto;
   border-color: #918967;
   border-style: solid;
   border-width: 10px;

@@ -4,14 +4,21 @@ import { tableSlice } from '../../features/tableSlice';
 import { generateTable } from '../../utils/generateTable';
 import './Minefield.css';
 import { Cell } from '../Cell';
+import { gameSlice } from '../../features/gameSlice';
 
 export const Minefield: React.FC = () => {
-  const { difficulty } = useAppSelector((state) => state.difficulty);
-  const { rows: table } = useAppSelector((state) => state.table);
+  const { difficulty, gameStatus } = useAppSelector((state) => state.game);
+  const { rows: table, openCells } = useAppSelector((state) => state.table);
   const dispatch = useAppDispatch();
   const [rowsCount, setRowsCount] = useState(8);
   const [columnsCount, setColumnCount] = useState(5);
   const [bombsCount, setBombsCount] = useState(5);
+
+  useEffect(() => {
+    if (rowsCount * columnsCount - openCells === bombsCount) {
+      dispatch(gameSlice.actions.setGameStatus('win'));
+    }
+  }, [openCells]);
 
   useEffect(() => {
     switch (difficulty) {
@@ -20,20 +27,28 @@ export const Minefield: React.FC = () => {
         setColumnCount(10);
         setBombsCount(20);
         break;
+      case 'Hard':
+        setRowsCount(32);
+        setColumnCount(20);
+        setBombsCount(100);
+        break;
       case 'Easy':
       default:
         setRowsCount(8);
         setColumnCount(5);
-        setBombsCount(5);
+        setBombsCount(8);
         break;
     }
   }, [difficulty]);
 
   useEffect(() => {
-    const newTable = generateTable(rowsCount, columnsCount, bombsCount);
+    if (gameStatus === 'idle') {
+      const newTable = generateTable(rowsCount, columnsCount, bombsCount);
 
-    dispatch(tableSlice.actions.set(newTable));
-  }, [rowsCount, columnsCount, bombsCount, dispatch]);
+      dispatch(tableSlice.actions.set(newTable));
+      dispatch(tableSlice.actions.setBombs(bombsCount));
+    }
+  }, [rowsCount, columnsCount, bombsCount, dispatch, gameStatus]);
 
   return (
     <div

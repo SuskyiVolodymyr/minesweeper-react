@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { difficultySlice } from '../features/difficultySlice';
+import { gameSlice } from '../features/gameSlice';
 import { tableSlice } from '../features/tableSlice';
 
 export const store = configureStore({
   reducer: {
-    difficulty: difficultySlice.reducer,
+    game: gameSlice.reducer,
     table: tableSlice.reducer,
   },
 });

@@ -5,4 +5,5 @@ export type CellType = {
   bombsAround: number;
   row: number;
   column: number;
+  hasFlag: boolean;
 };
