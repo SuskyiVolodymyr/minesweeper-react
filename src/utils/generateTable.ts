@@ -1,32 +1,14 @@
 import { CellType } from '../types/CellType';
+import { Cell } from './CellClass';
 
-function generateUniqueId(cells: CellType[][]) {
-  let maxId = 0;
-
-  for (const row of cells) {
-    for (const cell of row) {
-      if (cell.id >= maxId) {
-        maxId = cell.id;
-      }
-    }
-  }
-
-  return maxId + 1;
-}
-
-type Bomb = {
-  row: number;
-  column: number;
-};
-
-function countBombNeighbours(cells: CellType[][]) {
-  const newRows: CellType[][] = [];
+function countBombNeighbours(cells: Cell[][]) {
+  const newRows: Cell[][] = [];
 
   for (let row = 0; row < cells.length; row++) {
-    const newRow: CellType[] = [];
+    const newRow: Cell[] = [];
 
     for (let column = 0; column < cells[row].length; column++) {
-      const newCell: CellType = { ...cells[row][column] };
+      const cell = cells[row][column];
 
       const directions = [
         [-1, 0],
@@ -44,11 +26,11 @@ function countBombNeighbours(cells: CellType[][]) {
         const colDx = column + dy;
 
         if (cells[rowDx]?.[colDx]?.hasBomb) {
-          newCell.bombsAround += 1;
+          cell.bombsAround += 1;
         }
       }
 
-      newRow.push(newCell);
+      newRow.push(cell);
     }
 
     newRows.push(newRow);
@@ -57,39 +39,43 @@ function countBombNeighbours(cells: CellType[][]) {
   return newRows;
 }
 
-export const generateTable = (rows: number, columns: number, bombsCount: number) => {
-  const bombs: Bomb[] = [];
-
-  while (bombs.length !== bombsCount) {
-    const bomb: Bomb = {
-      row: Math.floor(Math.random() * rows),
-      column: Math.floor(Math.random() * columns),
-    };
-
-    if (!bombs.some((item) => item.row === bomb.row && item.column === bomb.column)) {
-      bombs.push(bomb);
-    }
-  }
-
-  const newRows: CellType[][] = [];
+export const generateTable = (rows: number, columns: number, bombsCount: number): CellType[][] => {
+  const bombs: boolean[][] = [];
+  let totalAddedBombs = 0;
 
   for (let i = 0; i < rows; i++) {
-    const newRow: CellType[] = [];
+    const newRow: boolean[] = [];
 
     for (let j = 0; j < columns; j++) {
-      newRow.push({
-        id: generateUniqueId([...newRows, newRow]),
-        hasBomb: bombs.some((item) => item.row === i && item.column === j),
-        isOpen: false,
-        bombsAround: 0,
-        row: i,
-        column: j,
-        hasFlag: false,
-      });
+      newRow.push(false);
+    }
+
+    bombs.push(newRow);
+  }
+
+  while (totalAddedBombs !== bombsCount) {
+    const randRow = Math.floor(Math.random() * rows);
+    const randCol = Math.floor(Math.random() * columns);
+
+    if (bombs[randRow][randCol]) {
+      continue;
+    }
+
+    bombs[randRow][randCol] = true;
+    totalAddedBombs += 1;
+  }
+
+  const newRows: Cell[][] = [];
+
+  for (let i = 0; i < rows; i++) {
+    const newRow: Cell[] = [];
+
+    for (let j = 0; j < columns; j++) {
+      newRow.push(new Cell(bombs[i][j], i, j));
     }
 
     newRows.push(newRow);
   }
 
-  return countBombNeighbours(newRows);
+  return countBombNeighbours(newRows).map((row) => row.map((cell) => ({ ...cell })));
 };

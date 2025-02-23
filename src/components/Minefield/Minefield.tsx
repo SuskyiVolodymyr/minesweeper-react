@@ -2,7 +2,7 @@ import React from 'react';
 import { useAppSelector } from '../../app/hooks';
 import './Minefield.css';
 import { Cell } from '../Cell';
-import { fieldProperties } from '../../utils/fieldProperties.ts';
+import { fieldProperties } from '../../utils/fieldProperties';
 
 export const Minefield: React.FC = () => {
   const { difficulty } = useAppSelector((state) => state.game);
