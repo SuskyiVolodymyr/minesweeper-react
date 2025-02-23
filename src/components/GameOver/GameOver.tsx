@@ -3,18 +3,19 @@ import React from 'react';
 import './GameOver.css';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { gameSlice } from '../../features/gameSlice';
+import { DifficultySelect } from '../../types/DifficultySelect';
 
 type Props = {
-  onRestart: () => void;
+  onRestart: (difficulty: DifficultySelect) => void;
 };
 
 export const GameOver = ({ onRestart }: Props) => {
   const dispatch = useAppDispatch();
-  const { gameStatus } = useAppSelector((state) => state.game);
+  const { gameStatus, difficulty } = useAppSelector((state) => state.game);
 
   const handleRestart = () => {
     dispatch(gameSlice.actions.setGameStatus('idle'));
-    onRestart();
+    onRestart(difficulty);
   };
 
   return (

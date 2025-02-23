@@ -5,26 +5,32 @@ import { Minefield } from './components/Minefield';
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import { GameOver } from './components/GameOver';
 import { BestScores } from './components/BestScores';
-import { fieldProperties } from './utils/fieldProperties';
 import { generateTable } from './utils/generateTable';
 import { tableSlice } from './features/tableSlice';
 import { useCallback, useEffect } from 'react';
+import { DifficultySelect } from './types/DifficultySelect';
+import { fieldProperties } from './utils/fieldProperties';
+import { gameSlice } from './features/gameSlice';
 
 export const App: React.FC = () => {
-  const { gameStatus } = useAppSelector((state) => state.game);
+  const { gameStatus, difficulty } = useAppSelector((state) => state.game);
   const dispatch = useAppDispatch();
 
-  const restartGame = useCallback(() => {
-    const properties = fieldProperties.Easy;
-    const newTable = generateTable(properties.rows, properties.columns, properties.bombs);
+  const restartGame = useCallback(
+    (diff: DifficultySelect) => {
+      const properties = fieldProperties[diff];
+      const newTable = generateTable(properties.rows, properties.columns, properties.bombs);
 
-    dispatch(tableSlice.actions.set(newTable));
-    dispatch(tableSlice.actions.setBombs(properties.bombs));
-  }, [dispatch]);
+      dispatch(tableSlice.actions.set(newTable));
+      dispatch(tableSlice.actions.setBombs(properties.bombs));
+      dispatch(gameSlice.actions.clearTime());
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
-    restartGame();
-  }, [dispatch, restartGame]);
+    restartGame(difficulty);
+  }, [dispatch, restartGame, difficulty]);
 
   return (
     <div className="container">
