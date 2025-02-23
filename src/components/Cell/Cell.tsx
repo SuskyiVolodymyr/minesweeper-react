@@ -9,6 +9,7 @@ import './Cell.css';
 import { fieldProperties } from '../../utils/fieldProperties';
 import { addScore } from '../../utils/localStorage';
 import { formatTime } from '../../utils/formatTime';
+import { countOpenedCells, openCells } from '../../utils/openCells';
 
 type Props = {
   cell: CellType;
@@ -34,22 +35,13 @@ enum FontSize {
 export const Cell = ({ cell }: Props) => {
   const dispatch = useAppDispatch();
   const { gameStatus, difficulty, time } = useAppSelector((state) => state.game);
-  const { openCells } = useAppSelector((state) => state.table);
+  const rows = useAppSelector((state) => state.table.rows);
 
   const handleRightClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (gameStatus === 'lose') {
-      return;
-    }
 
     if (gameStatus !== 'started') {
       dispatch(gameSlice.actions.setGameStatus('started'));
-    }
-
-    if (cell.hasFlag) {
-      dispatch(tableSlice.actions.increaseBombs());
-    } else {
-      dispatch(tableSlice.actions.decreaseBombs());
     }
 
     dispatch(tableSlice.actions.setFlag(cell));
@@ -67,10 +59,13 @@ export const Cell = ({ cell }: Props) => {
       dispatch(gameSlice.actions.setGameStatus('started'));
     }
 
-    dispatch(tableSlice.actions.openCell(cell));
+    const newTable = openCells(rows, cell);
+
+    dispatch(tableSlice.actions.openCell(newTable));
+
     const properties = fieldProperties[difficulty];
 
-    if (openCells === properties.totalCells() - properties.bombs) {
+    if (countOpenedCells(newTable) === properties.totalCells() - properties.bombs) {
       dispatch(gameSlice.actions.setGameStatus('win'));
       addScore(difficulty, formatTime(time));
     }
@@ -82,6 +77,7 @@ export const Cell = ({ cell }: Props) => {
         className="table-col"
         onContextMenu={handleRightClick}
         style={{ fontSize: `${FontSize[difficulty] - 4}px` }}
+        disabled={gameStatus === 'lose'}
       >
         🚩
       </button>

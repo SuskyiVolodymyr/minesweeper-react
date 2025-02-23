@@ -11,6 +11,12 @@ const directions = [
   [1, 1],
 ];
 
+export function countOpenedCells(cells: CellType[][]) {
+  return cells.flat().reduce((prev, cell) => {
+    return cell.isOpen ? prev + 1 : prev;
+  }, 0);
+}
+
 export function openCells(cells: CellType[][], initialCell: CellType) {
   const newCells = cells.map((row) => row.map((cell) => ({ ...cell })));
   const newInitialCell = { ...initialCell };

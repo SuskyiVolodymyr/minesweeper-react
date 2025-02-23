@@ -2,18 +2,18 @@
 
 import { CellType } from '../types/CellType';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { openCells } from '../utils/openCells';
+import { countOpenedCells } from '../utils/openCells';
 
 type InitialStateType = {
   rows: CellType[][];
   bombsLeft: number;
-  openCells: number;
+  openedCells: number;
 };
 
 const initialState: InitialStateType = {
   rows: [],
   bombsLeft: 0,
-  openCells: 0,
+  openedCells: 0,
 };
 
 export const tableSlice = createSlice({
@@ -22,15 +22,11 @@ export const tableSlice = createSlice({
   reducers: {
     set: (state, action: PayloadAction<CellType[][]>) => {
       state.rows = action.payload;
-      state.openCells = 0;
+      state.openedCells = 0;
     },
-    openCell: (state, action: PayloadAction<CellType>) => {
-      const newCells = openCells(state.rows, action.payload);
-
-      state.rows = newCells;
-      state.openCells = newCells.flat().reduce((prev, cell) => {
-        return cell.isOpen ? prev + 1 : prev;
-      }, 0);
+    openCell: (state, action: PayloadAction<CellType[][]>) => {
+      state.rows = action.payload;
+      state.openedCells = countOpenedCells(action.payload);
     },
     openAll: (state) => {
       state.rows = state.rows.map((row) =>
@@ -41,18 +37,13 @@ export const tableSlice = createSlice({
     setBombs: (state, action: PayloadAction<number>) => {
       state.bombsLeft = action.payload;
     },
-    increaseBombs: (state) => {
-      state.bombsLeft += 1;
-    },
-    decreaseBombs: (state) => {
-      state.bombsLeft -= 1;
-    },
     setFlag: (state, action: PayloadAction<CellType>) => {
       state.rows = state.rows.map((row) =>
         row.map((cell) => {
           return cell.id === action.payload.id ? { ...cell, hasFlag: !cell.hasFlag } : cell;
         }),
       );
+      state.bombsLeft = action.payload.hasFlag ? state.bombsLeft + 1 : state.bombsLeft - 1;
     },
   },
 });

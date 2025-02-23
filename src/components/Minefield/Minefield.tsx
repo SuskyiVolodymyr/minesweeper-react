@@ -5,8 +5,8 @@ import { Cell } from '../Cell';
 import { fieldProperties } from '../../utils/fieldProperties';
 
 export const Minefield: React.FC = () => {
-  const { difficulty } = useAppSelector((state) => state.game);
-  const { rows: table } = useAppSelector((state) => state.table);
+  const difficulty = useAppSelector((state) => state.game.difficulty);
+  const table = useAppSelector((state) => state.table.rows);
 
   return (
     <div

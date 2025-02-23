@@ -5,16 +5,16 @@ import { Minefield } from './components/Minefield';
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import { GameOver } from './components/GameOver';
 import { BestScores } from './components/BestScores';
-import { fieldProperties } from './utils/fieldProperties.ts';
+import { fieldProperties } from './utils/fieldProperties';
 import { generateTable } from './utils/generateTable';
 import { tableSlice } from './features/tableSlice';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export const App: React.FC = () => {
   const { gameStatus } = useAppSelector((state) => state.game);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
+  const restartGame = useCallback(() => {
     const properties = fieldProperties.Easy;
     const newTable = generateTable(properties.rows, properties.columns, properties.bombs);
 
@@ -22,13 +22,17 @@ export const App: React.FC = () => {
     dispatch(tableSlice.actions.setBombs(properties.bombs));
   }, [dispatch]);
 
+  useEffect(() => {
+    restartGame();
+  }, [dispatch, restartGame]);
+
   return (
     <div className="container">
       <BestScores />
       <div className="body">
         <Header />
         <Minefield />
-        {(gameStatus === 'lose' || gameStatus === 'win') && <GameOver />}
+        {(gameStatus === 'lose' || gameStatus === 'win') && <GameOver onRestart={restartGame} />}
       </div>
     </div>
   );

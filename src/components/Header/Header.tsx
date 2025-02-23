@@ -8,7 +8,7 @@ import { formatTime } from '../../utils/formatTime';
 
 export const Header = () => {
   const { difficulty, gameStatus, time } = useAppSelector((store) => store.game);
-  const { bombsLeft } = useAppSelector((store) => store.table);
+  const bombsLeft = useAppSelector((store) => store.table.bombsLeft);
   const dispatch = useAppDispatch();
 
   useEffect(() => {

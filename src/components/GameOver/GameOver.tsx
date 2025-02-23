@@ -3,22 +3,18 @@ import React from 'react';
 import './GameOver.css';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { gameSlice } from '../../features/gameSlice';
-import { generateTable } from '../../utils/generateTable';
-import { tableSlice } from '../../features/tableSlice';
-import { fieldProperties } from '../../utils/fieldProperties';
 
-export const GameOver: React.FC = () => {
+type Props = {
+  onRestart: () => void;
+};
+
+export const GameOver = ({ onRestart }: Props) => {
   const dispatch = useAppDispatch();
-  const { gameStatus, difficulty } = useAppSelector((state) => state.game);
+  const { gameStatus } = useAppSelector((state) => state.game);
 
   const handleRestart = () => {
     dispatch(gameSlice.actions.setGameStatus('idle'));
-    const properties = fieldProperties[difficulty];
-    const newTable = generateTable(properties.rows, properties.columns, properties.bombs);
-
-    dispatch(tableSlice.actions.set(newTable));
-    dispatch(tableSlice.actions.setBombs(properties.bombs));
-    dispatch(gameSlice.actions.clearTime());
+    onRestart();
   };
 
   return (
