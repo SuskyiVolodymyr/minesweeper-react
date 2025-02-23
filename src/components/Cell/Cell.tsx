@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
 import { CellType } from '../../types/CellType';
@@ -6,12 +6,15 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { tableSlice } from '../../features/tableSlice';
 import { gameSlice } from '../../features/gameSlice';
 import './Cell.css';
+import { fieldProperties } from '../../utils/fieldProperties';
+import { addScore } from '../../utils/localStorage';
+import { formatTime } from '../../utils/formatTime';
 
 type Props = {
   cell: CellType;
 };
 
-const colors = [
+const COLORS = [
   '#0000FF',
   '#008000',
   '#FF0000',
@@ -22,21 +25,16 @@ const colors = [
   '#808080',
 ];
 
-export const Cell: React.FC<Props> = ({ cell }) => {
+enum FontSize {
+  Easy = 24,
+  Normal = 18,
+  Hard = 8,
+}
+
+export const Cell = ({ cell }: Props) => {
   const dispatch = useAppDispatch();
-  const { gameStatus, difficulty } = useAppSelector((state) => state.game);
-  const fontSize = useMemo(() => {
-    switch (difficulty) {
-      case 'Easy':
-        return 24;
-      case 'Normal':
-        return 18;
-      case 'Hard':
-        return 8;
-      default:
-        return 24;
-    }
-  }, [difficulty]);
+  const { gameStatus, difficulty, time } = useAppSelector((state) => state.game);
+  const { openCells } = useAppSelector((state) => state.table);
 
   const handleRightClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -57,18 +55,6 @@ export const Cell: React.FC<Props> = ({ cell }) => {
     dispatch(tableSlice.actions.setFlag(cell));
   };
 
-  if (cell.hasFlag) {
-    return (
-      <button
-        className="table-col"
-        onContextMenu={handleRightClick}
-        style={{ fontSize: `${fontSize - 4}px` }}
-      >
-        🚩
-      </button>
-    );
-  }
-
   const handleLeftClick = () => {
     if (cell.hasBomb) {
       dispatch(tableSlice.actions.openAll());
@@ -82,7 +68,25 @@ export const Cell: React.FC<Props> = ({ cell }) => {
     }
 
     dispatch(tableSlice.actions.openCell(cell));
+    const properties = fieldProperties[difficulty];
+
+    if (openCells === properties.totalCells() - properties.bombs) {
+      dispatch(gameSlice.actions.setGameStatus('win'));
+      addScore(difficulty, formatTime(time));
+    }
   };
+
+  if (cell.hasFlag) {
+    return (
+      <button
+        className="table-col"
+        onContextMenu={handleRightClick}
+        style={{ fontSize: `${FontSize[difficulty] - 4}px` }}
+      >
+        🚩
+      </button>
+    );
+  }
 
   if (!cell.isOpen) {
     return (
@@ -97,7 +101,7 @@ export const Cell: React.FC<Props> = ({ cell }) => {
 
   if (cell.hasBomb) {
     return (
-      <div className="table-col" style={{ fontSize: `${fontSize}px` }}>
+      <div className="table-col" style={{ fontSize: `${FontSize[difficulty]}px` }}>
         💣
       </div>
     );
@@ -106,7 +110,7 @@ export const Cell: React.FC<Props> = ({ cell }) => {
   return (
     <div
       className="table-col openCell"
-      style={{ color: colors[cell.bombsAround + 1], fontSize: `${fontSize}px` }}
+      style={{ color: COLORS[cell.bombsAround + 1], fontSize: `${FontSize[difficulty]}px` }}
     >
       {cell.bombsAround}
     </div>

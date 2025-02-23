@@ -4,9 +4,16 @@ import { DifficultySelect } from '../types/DifficultySelect';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { GameStatus } from '../types/GameStatus';
 
-const initialState = {
-  difficulty: 'easy' as DifficultySelect,
-  gameStatus: 'idle' as GameStatus,
+type StateType = {
+  difficulty: DifficultySelect;
+  gameStatus: GameStatus;
+  time: number;
+};
+
+const initialState: StateType = {
+  difficulty: 'Easy',
+  gameStatus: 'idle',
+  time: 0,
 };
 
 export const gameSlice = createSlice({
@@ -18,6 +25,12 @@ export const gameSlice = createSlice({
     },
     setGameStatus: (state, action: PayloadAction<GameStatus>) => {
       state.gameStatus = action.payload;
+    },
+    setTime: (state) => {
+      state.time += 1;
+    },
+    clearTime: (state) => {
+      state.time = 0;
     },
   },
 });
